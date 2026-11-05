@@ -1,0 +1,18 @@
+# Camera and input: Prophesee Gen1, event-cube recording (240 x 304).
+
+name: gen1_240x304
+
+sensor:
+  height: 240
+  width: 304
+
+input:
+  format: event_cube_h5        # implemented in src/vc_rsc/data.py
+  path: data/raw/canrecording3_17-08-28_10-36-49_td_500000_60500000.h5   # relative to repo root
+  start_bin: 1000
+  end_bin: 1020                # exclusive
+  channel_names: ["ON 0", "OFF 0", "ON 1", "OFF 1", "ON 2", "OFF 2"]
+  normalize_uint8: true
+
+grouping:
+  group_size: 2                # 240 x 304 -> 120 x 152 = 18,240 pixel groups

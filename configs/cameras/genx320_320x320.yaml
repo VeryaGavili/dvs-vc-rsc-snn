@@ -1,0 +1,23 @@
+# Camera and input: Prophesee GenX320 (320 x 320).
+# STATUS: the GenX320 event stream (EVT2.1) is not yet converted to event cubes.
+# The loader in src/vc_rsc/data.py only reads event_cube_h5, so this file validates
+# but cannot run until a converter is added.
+
+name: genx320_320x320
+
+sensor:
+  height: 320
+  width: 320
+
+input:
+  format: evt21_events         # NOT IMPLEMENTED YET
+  path: null                   # set when the converter exists
+  start_bin: 0
+  end_bin: 20
+  channel_names: ["ON 0", "OFF 0", "ON 1", "OFF 1", "ON 2", "OFF 2"]
+  normalize_uint8: true
+
+grouping:
+  group_size: 4                # 320 x 320 -> 80 x 80 = 6,400 groups.
+                               # group_size 2 gives 25,600 groups, more than the 18,750
+                               # synapses of the 250 sensory L1 neurons; validation rejects it.
