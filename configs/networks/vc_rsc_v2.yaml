@@ -1,0 +1,91 @@
+# VC-RSC network, version 2.
+# Values copied from vc_rsc_v2.py (latest attachment, 2026-11-03).
+# Change parameters here, not in the code. Camera and input settings live in configs/cameras/.
+
+name: vc_rsc_v2
+random_seed: 7
+
+populations:
+  n_L1: 275                    # VC layer 1 total
+  n_L1_sensory: 250            # L1 neurons that receive pixel groups (the rest are feedback-only)
+  n_L2: 75
+  n_L3: 25
+  n_RSC: 100
+  rsc_inhibitory_fraction: 0.20
+
+synapses:
+  syn_per_neuron: 75           # total synapses per neuron, all sources
+  rsc_fraction_L2: 0.60        # share of L2 synapses from RSC (rest from L1)
+  rsc_fraction_L3: 0.30        # share of L3 synapses from RSC (rest from L2)
+  rsc_fanin:                   # RSC sources per VC layer; must sum to syn_per_neuron
+    L1: 45
+    L2: 15
+    L3: 15
+  capacity_candidates: 12      # nearest candidate neurons per pixel group
+
+kernels:
+  sigma_space_pix: 6.0         # spatial Gaussian width of a pixel-group synapse (pixels)
+  sigma_inter_pop_pix: 20.0    # spread of layer-to-layer sampling (pixels)
+  sigma_time_substeps: 6.0     # temporal Gaussian width (sub-steps)
+  temporal_history_steps: 8    # number of past sub-steps in the temporal kernel
+
+templates:
+  preferences: [edge0, edge45, edge90, edge135, circle, rot_cw, rot_ccw]
+  edge_width_pix: 15.0
+  circle_radius_pix: 20.0
+  circle_width_pix: 10.0
+
+time:
+  bin_ms: 50.0                 # one event-cube bin
+  substeps_per_bin: 3          # dt = bin_ms / substeps_per_bin (16.67 ms)
+
+neuron:
+  tau_adapt_ms: 25.0           # adaptation time constant
+  refractory_ms: 0.1
+  reset: 0.0
+
+groups:
+  sizes:                       # per layer: group sizes, must sum to the layer size
+    L1: [25, 100, 50, 25, 25, 50]
+    L2: [15, 15, 15, 10, 20]
+    L3: [10, 5, 5, 5]
+    RSC: [20, 10, 15, 15, 20, 20]
+  param_ranges:                # [low, high] for all groups, or one [low, high] per group
+    L1:
+      tau: [10.0, 20.0]
+      threshold: [1.0, 1.9]
+      adapt_gain: [1.0, 1.9]
+    L2:
+      tau: [8.0, 15.0]
+      threshold: [1.0, 1.5]
+      adapt_gain: [1.0, 1.6]
+    L3:
+      tau: [5.0, 12.0]
+      threshold: [0.9, 1.4]
+      adapt_gain: [1.0, 1.2]
+    RSC:
+      tau: [10.0, 20.0]
+      threshold: [1.0, 1.5]
+      adapt_gain: [1.0, 1.5]
+
+gains:
+  pixel_L1: 20.0
+  feedforward_vc: 5.0
+  rsc_to_vc: 10.0
+  vc_to_rsc: 7.0
+
+analysis:
+  cut_steps: [0, 1, 2]
+  tuning_example_neuron: 27    # RSC neuron index shown in figure 09
+  run_sweep: true
+  sweep_fractions:             # (L2, L3) feedback shares
+    - [0.0, 0.0]
+    - [0.2, 0.5]
+    - [0.4, 0.4]
+    - [0.6, 0.3]
+    - [0.8, 0.2]
+
+output:
+  dir: results/vc_rsc_v2       # relative to the repository root
+  save_figures: true
+  show_figures: false
